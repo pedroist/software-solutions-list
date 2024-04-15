@@ -37,7 +37,7 @@ function SoftwareSolutionUpdatesDialog({
         if (open) {
             fetchUpdates()
         }
-    }, [softwareSolution.id, open])
+    }, [softwareSolution.id, open, setTimestamp])
 
     return (
         <Dialog open={open} onClose={onClose}>
