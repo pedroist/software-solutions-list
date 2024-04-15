@@ -24,9 +24,7 @@ const markUpdatesAsSeen = ({
     timestamp,
 }: MarkUpdatesAsSeenInput) =>
     patch<MarkUpdatesAsSeenResponse>(
-        softwareSolutionId &&
-            timestamp &&
-            `${baseUrl}/solutions/${softwareSolutionId}/updates?timestamp=${timestamp}`
+        `${baseUrl}/solutions/${softwareSolutionId}/updates?timestamp=${timestamp}`
     )
 
 export const useMarkUpdatesAsSeen = () =>
