@@ -3,6 +3,7 @@ import SoftwareSolution from "../types/SoftwareSolution"
 import SoftwareSolutionUpdatesDialog from "./SoftwareSolutionUpdatesDialog"
 import { useEffect, useState } from "react"
 import softwareSolutionApi from "../api/softwareSolutionApi"
+import MarkUpdatesAsSeenResponse from "../types/markUpdatesAsSeenResponse"
 
 interface Props {
     softwareSolution: SoftwareSolution
@@ -17,31 +18,21 @@ function SoftwareSolutionCard({ softwareSolution }: Props) {
         softwareSolution.updatesNumber
     )
 
+    // Update updatesNumber state when softwareSolution.updatesNumber prop changes - everytime solutions are fetched this component also will re-render
     useEffect(() => {
-        // Update updatesNumber state when softwareSolution.updatesNumber prop changes
         setUpdatesNumber(softwareSolution.updatesNumber)
     }, [softwareSolution.updatesNumber])
 
-    console.log("updatesNumberState", updatesNumber)
-
     // Function to mark updates as seen
     const markUpdatesAsSeen = async () => {
-        console.log(timestamp)
         if (timestamp) {
-            await softwareSolutionApi.markUpdatesAsSeen(
+            const data = await softwareSolutionApi.markUpdatesAsSeen(
                 softwareSolution.id,
                 timestamp
             )
-            fetchUpdatesNumber()
+            const response: MarkUpdatesAsSeenResponse = await data.json()
+            setUpdatesNumber(response.unseenUpdatesNumber)
         }
-    }
-
-    const fetchUpdatesNumber = async () => {
-        const data = await softwareSolutionApi.getSoftwareSolutionUpdatesNumber(
-            softwareSolution.id
-        )
-        const updatesNumber = (await data.json()) as number
-        setUpdatesNumber(updatesNumber)
     }
 
     return (
