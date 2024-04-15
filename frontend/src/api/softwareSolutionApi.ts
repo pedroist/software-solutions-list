@@ -12,17 +12,10 @@ export const useSoftwareSolutions = () => {
     return useSWR<SoftwareSolution[], HTTPError>(`${baseUrl}/solutions`, get)
 }
 
-export const useSoftwareSolutionsWithRefreshInterval = () => {
-    return useSWR<SoftwareSolution[], HTTPError>(`${baseUrl}/solutions`, get, {
-        refreshInterval: 8000,
-    })
-}
-
 export const useSoftwareSolutionUpdates = (softwareSolutionId: string) => {
     return useSWR<SoftwareSolutionUpdatesResponse, HTTPError>(
         `${baseUrl}/solutions/${softwareSolutionId}`,
-        get,
-        { refreshInterval: 0 } // Disable caching
+        get
     )
 }
 
@@ -41,21 +34,8 @@ export const useMarkUpdatesAsSeen = () =>
         markUpdatesAsSeen,
         {
             onSuccess({ input: { softwareSolutionId } }) {
-                //mutate(`${baseUrl}/solutions`)
+                mutate(`${baseUrl}/solutions`)
                 mutate(`${baseUrl}/solutions/${softwareSolutionId}`)
             },
         }
     )
-
-/**TODO: delete what comes next */
-const softwareSolutionApi = {
-    markUpdatesAsSeen: (softwareSolutionId: string, timestamp: string) =>
-        fetch(
-            `${baseUrl}/solutions/${softwareSolutionId}/updates?timestamp=${timestamp}`,
-            {
-                method: "PATCH",
-            }
-        ),
-}
-
-export default softwareSolutionApi
