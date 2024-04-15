@@ -2,8 +2,11 @@ import { Badge, Card, Typography } from "@mui/material"
 import SoftwareSolution from "../types/SoftwareSolution"
 import SoftwareSolutionUpdatesDialog from "./SoftwareSolutionUpdatesDialog"
 import { useEffect, useState } from "react"
-import softwareSolutionApi from "../api/softwareSolutionApi"
-import MarkUpdatesAsSeenResponse from "../types/markUpdatesAsSeenResponse"
+import softwareSolutionApi, {
+    useMarkUpdatesAsSeen,
+} from "../api/softwareSolutionApi"
+import MarkUpdatesAsSeenResponse from "../types/MarkUpdatesAsSeenResponse"
+import MarkUpdatesAsSeenInput from "../types/MarkUpdatesAsSeenInput"
 
 interface Props {
     softwareSolution: SoftwareSolution
@@ -18,20 +21,24 @@ function SoftwareSolutionCard({ softwareSolution }: Props) {
         softwareSolution.updatesNumber
     )
 
+    const [markUpdatesAsSeen, { status, reset }] = useMarkUpdatesAsSeen()
+
     // Update updatesNumber state when softwareSolution.updatesNumber prop changes - everytime solutions are fetched this component also will re-render
     useEffect(() => {
         setUpdatesNumber(softwareSolution.updatesNumber)
     }, [softwareSolution.updatesNumber])
 
     // Function to mark updates as seen
-    const markUpdatesAsSeen = async () => {
+    const markUpdatesAsSeenHandler = async () => {
         if (timestamp) {
-            const data = await softwareSolutionApi.markUpdatesAsSeen(
-                softwareSolution.id,
-                timestamp
-            )
-            const response: MarkUpdatesAsSeenResponse = await data.json()
-            setUpdatesNumber(response.unseenUpdatesNumber)
+            const response = await markUpdatesAsSeen({
+                softwareSolutionId: softwareSolution.id,
+                timestamp,
+            } as MarkUpdatesAsSeenInput)
+
+            if (response) {
+                setUpdatesNumber(response.unseenUpdatesNumber)
+            }
         }
     }
 
@@ -56,7 +63,7 @@ function SoftwareSolutionCard({ softwareSolution }: Props) {
                     softwareSolution={softwareSolution}
                     open={openUpdates}
                     onClose={() => {
-                        markUpdatesAsSeen()
+                        markUpdatesAsSeenHandler()
                         setOpenUpdates(false)
                     }}
                     setTimestamp={setTimestamp}

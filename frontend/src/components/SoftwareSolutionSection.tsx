@@ -1,26 +1,10 @@
 import { Box, Container, Typography } from "@mui/material"
-import { useEffect, useState } from "react"
-import softwareSolutionApi from "../api/softwareSolutionApi"
 import SoftwareSolutionCard from "./SoftwareSolutionCard"
-import SoftwareSolution from "../types/SoftwareSolution"
+import { useSoftwareSolutionsWithRefreshInterval } from "../api/softwareSolutionApi"
 
 function SoftwareSolutionSection() {
-    const [softwareSolutions, setSoftwareSolutions] = useState<
-        SoftwareSolution[]
-    >([])
-
-    useEffect(() => {
-        const fetchSolutions = async () => {
-            const data = await softwareSolutionApi.getSoftwareSolutions()
-            const solutions = (await data.json()) as SoftwareSolution[]
-            setSoftwareSolutions(solutions)
-        }
-        //Fetch Solutions every few seconds
-        const interval = setInterval(fetchSolutions, 4000)
-
-        // Clear interval on component unmount
-        return () => clearInterval(interval)
-    }, [])
+    const { data: softwareSolutions } =
+        useSoftwareSolutionsWithRefreshInterval()
 
     return (
         <Container sx={{ py: 8 }}>
@@ -32,7 +16,7 @@ function SoftwareSolutionSection() {
                 gridTemplateColumns={"repeat(3, 1fr)"}
                 gap={2}
             >
-                {softwareSolutions.map((softwareSolution) => (
+                {(softwareSolutions || []).map((softwareSolution) => (
                     <SoftwareSolutionCard
                         key={softwareSolution.id}
                         softwareSolution={softwareSolution}
