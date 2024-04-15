@@ -3,7 +3,7 @@ import SoftwareSolution from "../types/SoftwareSolution"
 import SoftwareSolutionUpdatesDialog from "./SoftwareSolutionUpdatesDialog"
 import { useEffect, useState } from "react"
 import softwareSolutionApi from "../api/softwareSolutionApi"
-import MarkUpdatesAsSeenResponse from "../types/markUpdatesAsSeenResponse"
+import MarkUpdatesAsSeenResponse from "../types/MarkUpdatesAsSeenResponse"
 
 interface Props {
     softwareSolution: SoftwareSolution
