@@ -2,7 +2,7 @@ package com.softwaregini.backend.software.controller
 
 import com.softwaregini.backend.software.model.*
 import com.softwaregini.backend.software.model.responses.SoftwareSolutionUpdatesResponse
-import com.softwaregini.backend.software.model.responses.UpdateStatusResponse
+import com.softwaregini.backend.software.model.responses.MarkUpdatesAsSeenResponse
 import org.springframework.web.bind.annotation.*
 import java.time.Instant
 import java.util.UUID
@@ -25,17 +25,11 @@ class SoftwareSolutionController(
         return SoftwareSolutionUpdatesResponse(updates, timestamp)
     }
 
-    @GetMapping("/{softwareSolutionId}/updatesNumber")
-    fun getUpdatesNumber(@PathVariable softwareSolutionId: UUID): Int {
-        val softwareSolution = softwareSolutionRepository.findById(softwareSolutionId).orElseThrow()
-        return softwareSolution.updatesNumber
-    }
-
     @PatchMapping("/{softwareSolutionId}/updates")
     fun markUpdatesAsSeen(
         @PathVariable softwareSolutionId: UUID,
         @RequestParam timestamp: String
-    ): UpdateStatusResponse {
+    ): MarkUpdatesAsSeenResponse {
         // Find updates associated with the software solution
         val updates = softwareSolutionUpdateRepository
             .findBySoftwareSolutionIdAndUpdatedAtBeforeAndSeenByUserIsFalse(
@@ -53,8 +47,10 @@ class SoftwareSolutionController(
         // Update the updatesNumber field in the SoftwareSolution entity
         val softwareSolution = softwareSolutionRepository.findById(softwareSolutionId).orElseThrow()
         softwareSolution.updatesNumber -= updatesMarkedAsSeenCount
+        val unseenUpdatesNumber = softwareSolution.updatesNumber
+
         softwareSolutionRepository.save(softwareSolution)
 
-        return UpdateStatusResponse("Updates marked as seen successfully")
+        return MarkUpdatesAsSeenResponse(unseenUpdatesNumber)
     }
 }
