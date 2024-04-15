@@ -116,7 +116,7 @@ export async function put<T>(
 
 export async function patch<T>(
     url: string,
-    params: any,
+    params?: any,
     fetchOptions?: RequestInit
 ): Promise<T> {
     return fetchWrapper(url, {
